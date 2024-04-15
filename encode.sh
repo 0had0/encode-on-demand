@@ -12,22 +12,25 @@ input_height=$(jq -r '.input_height' $1)
 output_width=$(jq -r '.output_width' $1)
 output_height=$(jq -r '.output_height' $1)
 codec=$(jq -r '.codec' $1)
+QP=$(jq -r '.qp' $1)
+CRF=$(jq -r '.crf' $1)
 
 input_basename=$(basename $input_path)
 
 IFS="." read name ext <<< $input_basename
 
-output_path=$output_path/${name}_${bitrate}_${output_width}x${output_height}.${codec}
+output_path=$output_path/${name}_${bitrate}_${QP}_${CRF}_${output_width}x${output_height}.${codec}
 
 echo "Encoding YUV to $codec (${output_width}x${output_height}, ${bitrate}kbps) @ $output_path"
 
-if [[ -z "$input_path" || -z "$pixel_format" || -z "$bitrate" || -z "$input_width" || -z "$input_height" || -z "$output_width" || -z "$output_height" ]]; then
+if [[ -z "$CRF" || -z "$input_path" || -z "$pixel_format" || -z "$bitrate" || -z "$input_width" || -z "$input_height" || -z "$output_width" || -z "$output_height" || -z "$QP" ]]; then
   echo "Error: Missing required fields in JSON configuration."
   exit 1
 fi
 
 ffmpeg -pixel_format "$pixel_format" -video_size "${input_width}x${input_height}" -i "$input_path" \
        -f rawvideo -vcodec rawvideo \
-       -c:v "$codec" -b:v $bitrate \
+       -c:v "$codec" -b:v $bitrate -qp $QP -crf $CRF \
        -vf scale=${output_width}x${output_height} \
+       -color_primaries bt2020 -color_trc smpte2084 -colorspace bt2020nc \
        -y "$output_path"

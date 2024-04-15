@@ -3,6 +3,8 @@
     "input_path": "/home/hadi/Documents/encode-on-demand/input/theObserver.yuv",
     "pixel_format": "yuv422p10le",
     "bitrate": "3M",
+    "qp": "60",
+    "crf": "50",
     "input_width": "3840",
     "input_height": "2160",
     "output_width": "1920",
