@@ -13,15 +13,21 @@ output_width=$(jq -r '.output_width' $1)
 output_height=$(jq -r '.output_height' $1)
 codec=$(jq -r '.codec' $1)
 
+input_basename=$(basename $input_path)
+
+IFS="." read name ext <<< $input_basename
+
+output_path=$output_path/${name}_${bitrate}_${output_width}x${output_height}.${codec}
+
 echo "Encoding YUV to $codec (${output_width}x${output_height}, ${bitrate}kbps) @ $output_path"
 
-if [[ -z "$output_path" || -z "$input_path" || -z "$pixel_format" || -z "$bitrate" || -z "$input_width" || -z "$input_height" || -z "$output_width" || -z "$output_height" ]]; then
+if [[ -z "$input_path" || -z "$pixel_format" || -z "$bitrate" || -z "$input_width" || -z "$input_height" || -z "$output_width" || -z "$output_height" ]]; then
   echo "Error: Missing required fields in JSON configuration."
   exit 1
 fi
 
 ffmpeg -pixel_format "$pixel_format" -video_size "${input_width}x${input_height}" -i "$input_path" \
        -f rawvideo -vcodec rawvideo \
-       -c:v "$codec" -bit_rate "${bitrate}k" \
+       -c:v "$codec" -b:v $bitrate \
        -vf scale=${output_width}x${output_height} \
        -y "$output_path"

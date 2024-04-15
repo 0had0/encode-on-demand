@@ -1,0 +1,11 @@
+{
+    "output_path": "/home/hadi/Documents/encode-on-demand/output",
+    "input_path": "/home/hadi/Documents/encode-on-demand/input/theObserver.yuv",
+    "pixel_format": "yuv422p10le",
+    "bitrate": "3M",
+    "input_width": "3840",
+    "input_height": "2160",
+    "output_width": "1920",
+    "output_height": "1080",
+    "codec": "hevc"
+}
